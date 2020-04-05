@@ -17,42 +17,27 @@ const main = () =>
 		const { toGLShader, toGLProgram } = toGLSetup(gl);
 		const program = toGLProgram(...shaderIDs.map(toGLShader))(...vertexAttribs);
 
-		// const buffer = gl.createBuffer();
-		// gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-		const vertexBuffer = gl.createBuffer();
-		gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-		// const vertexData = [
-		// 	0.0, 0.8, 0.0, 1.0, 0.0, 0.0, 1.0,
-		// 	-0.8, -0.8, 0.0, 0.0, 1.0, 0.0, 1.0,
-		// 	0.8, -0.8, 0.0, 0.0, 0.0, 1.0, 1.0
-		// ];
-		const vertices = [
-			0.0, 0.8, 0.0,
-			-0.8, -0.8, 0.0,
-			0.8, -0.8, 0.0
-		];
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-
-		const colorBuffer = gl.createBuffer();
-		gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-		const colors = [
-			1.0, 0.0, 0.0, 1.0,
-			0.0, 0.0, 1.0, 1.0,
-			0.0, 1.0, 0.0, 1.0,
-		];
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-
-		// 7 floats per vertex
-		// const stride = 7 * Float32Array.BYTES_PER_ELEMENT;
-
-		// gl.vertexAttribPointer(program.position, 3, gl.FLOAT, false, stride, 0);
-		// gl.vertexAttribPointer(program.color, 4, gl.FLOAT, false, stride, 3 * Float32Array.BYTES_PER_ELEMENT);
-		gl.vertexAttribPointer(program.position, 3, gl.FLOAT, false, 0, 0);
-		gl.vertexAttribPointer(program.color, 4, gl.FLOAT, false, 0, 0);
-
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);
 		gl.clear(gl.COLOR_BUFFER_BIT);
 		gl.disable(gl.DEPTH_TEST);
+
+		const vertexBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+		gl.vertexAttribPointer(program.position, 3, gl.FLOAT, false, 0, 0);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+			0.0, 1.0, 0.0,
+			-1.0, -1.0, 0.0,
+			1.0, -1.0, 0.0
+		]), gl.STATIC_DRAW);
+
+		const colorBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+		gl.vertexAttribPointer(program.color, 4, gl.FLOAT, false, 0, 0);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+			1.0, 0.0, 0.0, 1.0,
+			0.0, 0.0, 1.0, 1.0,
+			0.0, 1.0, 0.0, 1.0,
+		]), gl.STATIC_DRAW);
 
 		gl.drawArrays(gl.TRIANGLES, 0, 3);
 	}
