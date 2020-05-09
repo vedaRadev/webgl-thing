@@ -1,24 +1,28 @@
 // TODO: install ctags on this machine
 import toInitGL, {
 	GL_DATA_TYPES,
-	GL_BUFFER_TARGETS
+	GL_BUFFER_TARGETS,
+	GL_BUFFER_USAGES,
 } from '../lib/glSetup';
 
 const { ARRAY_BUFFER } = GL_BUFFER_TARGETS;
 const { FLOAT } = GL_DATA_TYPES;
+const { STATIC_DRAW } = GL_BUFFER_USAGES;
 
 const shaderIDs = ['shader-fs', 'shader-vs'];
 const bufferConfigs = [
 	{
-		bufferID: 'vertexBuffer',
+		bufferName: 'vertices',
 		bufferTarget: ARRAY_BUFFER,
 		bufferType: Float32Array,
+		bufferUsage: STATIC_DRAW,
 		attribs: [{ name: 'position', size: 3, dataType: FLOAT }]
 	},
 	{
-		bufferID: 'colorBuffer',
+		bufferName: 'colors',
 		bufferTarget: ARRAY_BUFFER,
 		bufferType: Float32Array,
+		bufferUsage: STATIC_DRAW,
 		attribs: [{ name: 'color', size: 4, dataType: FLOAT }]
 	}
 ];
@@ -27,17 +31,20 @@ const main = () =>
 {
 	const screen = document.getElementById('screen');
 	const gl = screen.getContext('webgl2');
-	const [, { vertexBuffer, colorBuffer }] = toInitGL(gl)(shaderIDs, bufferConfigs);
-	const vertices = [];
-	const colors = [];
 
-	vertices.push(0.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, -1.0, 0.0);
-	gl.bindBuffer(vertexBuffer.target, vertexBuffer.buffer);
-	gl.bufferData(vertexBuffer.target, new vertexBuffer.type(vertices), gl.STATIC_DRAW);
+	const [, { vertices, colors }] = toInitGL(gl)(shaderIDs, bufferConfigs);
+	
+	vertices.setData([
+		0.0, 1.0, 0.0, 
+		-1.0, -1.0, 0.0, 
+		1.0, -1.0, 0.0
+	]);
 
-	colors.push(1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0);
-	gl.bindBuffer(colorBuffer.target, colorBuffer.buffer);
-	gl.bufferData(colorBuffer.target, new colorBuffer.type(colors), gl.STATIC_DRAW);
+	colors.setData([
+		1.0, 0.0, 0.0, 1.0, 
+		0.0, 0.0, 1.0, 1.0, 
+		0.0, 1.0, 0.0, 1.0
+	]);
 
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
 	gl.clear(gl.COLOR_BUFFER_BIT);
