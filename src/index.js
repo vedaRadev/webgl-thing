@@ -27,30 +27,40 @@ const bufferConfigs = [
 	}
 ];
 
+const toDrawTriangle = gl => (vertexBuffer, colorBuffer) => 
+{
+	const shapeDataIndexInBuffer = vertexBuffer.toLength() + 1;
+
+	vertexBuffer.setData([
+		0.0, 1.0, 0.0, 
+		-1.0, -1.0, 0.0, 
+		1.0, -1.0, 0.0
+	]);
+
+	colorBuffer.setData([
+		1.0, 0.0, 0.0, 1.0, 
+		0.0, 0.0, 1.0, 1.0, 
+		0.0, 1.0, 0.0, 1.0
+	]);
+
+	return () => gl.drawArray(gl.TRIANGLES, shapeDataIndexInBuffer, shapeDataIndexInBuffer + 3);
+};
+
 const main = () => 
 {
 	const screen = document.getElementById('screen');
 	const gl = screen.getContext('webgl2');
 
 	const [, { vertices, colors }] = toInitGL(gl)(shaderIDs, bufferConfigs);
-	
-	vertices.setData([
-		0.0, 1.0, 0.0, 
-		-1.0, -1.0, 0.0, 
-		1.0, -1.0, 0.0
-	]);
 
-	colors.setData([
-		1.0, 0.0, 0.0, 1.0, 
-		0.0, 0.0, 1.0, 1.0, 
-		0.0, 1.0, 0.0, 1.0
-	]);
+	const drawTriangle = toDrawTriangle(gl)(vertices, colors);
+	console.log(vertices.toLength());
 
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
 	gl.clear(gl.COLOR_BUFFER_BIT);
 	gl.disable(gl.DEPTH_TEST);
 
-	gl.drawArrays(gl.TRIANGLES, 0, 3);
+	drawTriangle();
 };
 
 window.onload = main;
