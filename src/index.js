@@ -16,8 +16,8 @@ const { FLOAT } = GL_DATA_TYPES;
 const { STATIC_DRAW } = GL_BUFFER_USAGES;
 const { TRIANGLES, TRIANGLE_FAN } = GL_DRAW_MODES;
 
-import { object, array, pipe } from '../lib/fp';
-const { map, pluck, reduce } = object;
+import { object, array } from '../lib/fp';
+const { reduce } = object;
 const { push } = array;
 
 const shaderIDs = ['shader-fs', 'shader-vs'];
@@ -37,6 +37,8 @@ const bufferConfigs = [
 		attribs: [{ name: 'color', size: 4, dataType: FLOAT }]
 	}
 ];
+
+const pushPoints = (...vals) => push(...vals.flat());
 
 const toDrawShape = gl => 
 {
@@ -68,13 +70,31 @@ const main = () =>
 	const toDrawGLShape = toDrawShape(gl);
 
 	const drawTriangle = toDrawGLShape(({
-		vertices: push(0.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, -1.0, 0.0),
-		colors: push(1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0)
+		vertices: pushPoints(
+			[0.0, 1.0, 0.0],
+			[-1.0, -1.0, 0.0],
+			[1.0, -1.0, 0.0],
+		),
+		colors: pushPoints(
+			[1.0, 0.0, 0.0, 1.0],
+			[0.0, 0.0, 1.0, 1.0], 
+			[0.0, 1.0, 0.0, 1.0]
+		)
 	}), TRIANGLES)(vertices, colors);
 
 	const drawSquare = toDrawGLShape(({
-		vertices: push(1.0, 1.0, 0.0, -1.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, -1.0, 0.0),
-		colors: push(1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0)
+		vertices: pushPoints(
+			[1.0, 1.0, 0.0],
+			[-1.0, 1.0, 0.0],
+			[-1.0, -1.0, 0.0],
+			[1.0, -1.0, 0.0]
+		),
+		colors: pushPoints(
+			[1.0, 0.0, 0.0, 1.0], 
+			[0.0, 1.0, 0.0, 1.0],
+			[0.0, 0.0, 1.0, 1.0],
+			[1.0, 1.0, 0.0, 1.0]
+		)
 	}), TRIANGLE_FAN)(vertices, colors);
 
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
