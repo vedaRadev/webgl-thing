@@ -40,7 +40,7 @@ const bufferConfigs = [
 
 const pushPoints = (...vals) => push(...vals.flat());
 
-const toDrawShape = gl => 
+const toDrawGeometry = gl => 
 {
 	const toGLDrawMode = toDrawMode(gl);
 
@@ -67,34 +67,16 @@ const main = () =>
 	const gl = screen.getContext('webgl2');
 
 	const [, { vertices, colors }] = toInitGL(gl)(shaderIDs, bufferConfigs);
-	const toDrawGLShape = toDrawShape(gl);
+	const toDrawGLGeometry = toDrawGeometry(gl);
 
-	const drawTriangle = toDrawGLShape(({
-		vertices: pushPoints(
-			[0.0, 1.0, 0.0],
-			[-1.0, -1.0, 0.0],
-			[1.0, -1.0, 0.0],
-		),
-		colors: pushPoints(
-			[1.0, 0.0, 0.0, 1.0],
-			[0.0, 0.0, 1.0, 1.0], 
-			[0.0, 1.0, 0.0, 1.0]
-		)
+	const drawTriangle = toDrawGLGeometry(({
+		vertices: pushPoints([0.0, 1.0, 0.0], [-1.0, -1.0, 0.0], [1.0, -1.0, 0.0],),
+		colors: pushPoints([1.0, 0.0, 0.0, 1.0], [0.0, 0.0, 1.0, 1.0], [0.0, 1.0, 0.0, 1.0])
 	}), TRIANGLES)(vertices, colors);
 
-	const drawSquare = toDrawGLShape(({
-		vertices: pushPoints(
-			[1.0, 1.0, 0.0],
-			[-1.0, 1.0, 0.0],
-			[-1.0, -1.0, 0.0],
-			[1.0, -1.0, 0.0]
-		),
-		colors: pushPoints(
-			[1.0, 0.0, 0.0, 1.0], 
-			[0.0, 1.0, 0.0, 1.0],
-			[0.0, 0.0, 1.0, 1.0],
-			[1.0, 1.0, 0.0, 1.0]
-		)
+	const drawSquare = toDrawGLGeometry(({
+		vertices: pushPoints([1.0, 1.0, 0.0], [-1.0, 1.0, 0.0], [-1.0, -1.0, 0.0], [1.0, -1.0, 0.0]),
+		colors: pushPoints([1.0, 0.0, 0.0, 1.0], [0.0, 1.0, 0.0, 1.0], [0.0, 0.0, 1.0, 1.0], [1.0, 1.0, 0.0, 1.0])
 	}), TRIANGLE_FAN)(vertices, colors);
 
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
