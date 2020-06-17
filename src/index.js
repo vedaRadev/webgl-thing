@@ -16,7 +16,7 @@ const { FLOAT } = GL_DATA_TYPES;
 const { STATIC_DRAW } = GL_BUFFER_USAGES;
 // const { TRIANGLES, TRIANGLE_FAN } = GL_DRAW_MODES;
 
-import { object, array } from '../lib/fp';
+import { pipe, object, array } from '../lib/fp';
 const { forEach } = object;
 const { push } = array;
 
@@ -73,17 +73,29 @@ const main = () =>
 	const screen = document.getElementById('screen');
 	const gl = screen.getContext('webgl2');
 
-	const [, { vertices, colors }] = toInitGL(gl)(shaderIDs, bufferConfigs);
-	const triangle = toGeneratePrimitive({ vertices, colors })({ 
-		vertices: points => pushPoints(...points),
-		colors: channels => pushPoints(...channels),
+	const [, buffers] = toInitGL(gl)(shaderIDs, bufferConfigs);
+
+	const generatePrimitive = toGeneratePrimitive(buffers);
+	const generateTriangle = generatePrimitive({ 
+		vertices: ([a, b, c]) => pushPoints(a, b, c),
+		colors: ([a, b, c]) => pushPoints(a, b, c),
+	});
+	const generateQuad = generatePrimitive({
+		vertices: ([a, b, c, d]) => pushPoints(a, b, c, a, c, d),
+		colors: ([a, b, c, d]) => pushPoints(a, b, c, a, c, d)
 	});
 
-	triangle({ vertices: [[1, -1, 0], [0, 1, 0], [-1, -1, 0]], colors: [[1, 0, 0, 1], [0, 1, 0, 1], [0, 0, 1, 1]] });
+	// generateTriangle({ vertices: [[1, -1, 0], [0, 1, 0], [-1, -1, 0]], colors: [[1, 0, 0, 1], [0, 1, 0, 1], [0, 0, 1, 1]] });
+	generateQuad({
+		vertices: [[1, -1, 0], [1, 1, 0], [-1, 1, 0], [-1, -1, 0]],
+		colors: [[1, 0, 0, 1], [0, 1, 0, 1], [0, 0, 1, 1], [0.5, 0.5, 0, 1]]
+	});
 
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
 	gl.clear(gl.COLOR_BUFFER_BIT);
 	gl.disable(gl.DEPTH_TEST);
+
+	const { vertices, colors } = buffers;
 
 	gl.bindBuffer(vertices.target, vertices.buffer);
 	gl.bufferData(vertices.target, new vertices.type(vertices.data), vertices.usage);
@@ -91,7 +103,7 @@ const main = () =>
 	gl.bindBuffer(colors.target, colors.buffer);
 	gl.bufferData(colors.target, new colors.type(colors.data), colors.usage);
 
-	gl.drawArrays(gl.TRIANGLES, 0, 3);
+	gl.drawArrays(gl.TRIANGLES, 0, 6);
 };
 
 window.onload = main;
