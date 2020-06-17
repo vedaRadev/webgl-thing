@@ -16,7 +16,7 @@ const { FLOAT } = GL_DATA_TYPES;
 const { STATIC_DRAW } = GL_BUFFER_USAGES;
 // const { TRIANGLES, TRIANGLE_FAN } = GL_DRAW_MODES;
 
-import { pipe, object, array } from '../lib/fp';
+import { object, array } from '../lib/fp';
 const { forEach } = object;
 const { push } = array;
 
