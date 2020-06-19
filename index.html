@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>WebGL Shit</title>
+		<title>WebGL Stuff</title>
 		<link rel="stylesheet" href="./src/index.css">
 
 		<!-- Fragment Shader -->
@@ -20,12 +20,13 @@
 		<script id="shader-vs" type="x-shader/x-vertex">
 			attribute vec3 position;
 			attribute vec4 color;
+			uniform mat4 modelViewMatrix;
 
 			varying vec4 vColor;
 
 			void main()
 			{
-				gl_Position = vec4(position, 1.0);
+				gl_Position = modelViewMatrix * vec4(position, 1.0);
 				vColor = color;
 			}
 		</script>

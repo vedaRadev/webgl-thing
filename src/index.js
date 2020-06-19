@@ -18,7 +18,7 @@ const { STATIC_DRAW } = GL_BUFFER_USAGES;
 
 import { object, array } from '../lib/fp';
 const { forEach } = object;
-const { push } = array;
+const { push, zip } = array;
 
 const shaderIDs = ['shader-fs', 'shader-vs'];
 const bufferConfigs = [
@@ -35,6 +35,13 @@ const bufferConfigs = [
 		bufferType: Float32Array,
 		bufferUsage: STATIC_DRAW,
 		attribs: [{ name: 'color', size: 4, dataType: FLOAT }]
+	},
+	// TODO: Does this really belong in the bufferConfigs?
+	// It's really more just depicting a location in the program.
+	{
+		bufferName: 'mvMat',
+		bufferType: Float32Array,
+		uniforms: [{ name: 'modelViewMatrix' }]
 	}
 ];
 
@@ -68,13 +75,31 @@ const render = () =>
 
 const toGeneratePrimitive = buffers => config => forEach((updateData, updateName, updates) => config[updateName](updateData, updates)(buffers[updateName].data));
 
+const toTransformationMatrix = (location, shouldTranspose, { bufferType }) =>
+{
+	const data = [[], [], [], []];
+	return {
+		update: () => gl.uniformMatrix4fv(location, shouldTranspose, new bufferType(...data.flat())),
+		applyTransformations: (...transformations) => transformations.reduce((acc, transformation) => multiplyMatrices(acc, transformation), data)
+	};
+};
+
+import { lookAt } from '../lib/matrices';
 const main = () => 
 {
 	const screen = document.getElementById('screen');
 	const gl = screen.getContext('webgl2');
 
-	const [, buffers] = toInitGL(gl)(shaderIDs, bufferConfigs);
+	const [{ locations }, buffers] = toInitGL(gl)(shaderIDs, bufferConfigs);
+	// const modelViewMatrix = toTransformationMatrix(locations.modelViewMatrix, false, buffers.mvMat);
+	
+	let eye = [2, -3.25, 2];
+	let at	= [0, -4, 0];
+	let up	= [0, 1, 0];
 
+	console.log(lookAt(eye, at, up));
+
+	/*
 	const generatePrimitive = toGeneratePrimitive(buffers);
 	const generateTriangle = generatePrimitive({ 
 		vertices: ([a, b, c]) => pushPoints(a, b, c),
@@ -97,13 +122,14 @@ const main = () =>
 
 	const { vertices, colors } = buffers;
 
-	gl.bindBuffer(vertices.target, vertices.buffer);
-	gl.bufferData(vertices.target, new vertices.type(vertices.data), vertices.usage);
+	gl.bindBuffer(vertices.glTarget, vertices.glBuffer);
+	gl.bufferData(vertices.glTarget, new vertices.type(vertices.data), vertices.usage);
 
-	gl.bindBuffer(colors.target, colors.buffer);
-	gl.bufferData(colors.target, new colors.type(colors.data), colors.usage);
+	gl.bindBuffer(colors.glTarget, colors.glBuffer);
+	gl.bufferData(colors.glTarget, new colors.type(colors.data), colors.usage);
 
 	gl.drawArrays(gl.TRIANGLES, 0, 6);
+	*/
 };
 
 window.onload = main;
