@@ -2,6 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
+	devtool: 'cheap-module-eval-source-map',
 	watch: true,
 	entry: './src/index.js',
 	output: {
@@ -19,8 +20,9 @@ module.exports = {
 				use: {
 					loader: 'babel-loader',
 					options: {
-						presets: ['@babel/preset-env']
-					}
+						presets: ['@babel/preset-env'],
+						// retainLines: true,
+					},
 				}
 			}
 		]
