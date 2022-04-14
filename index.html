@@ -3,15 +3,15 @@
 	<head>
 		<meta charset="utf-8">
 		<title>WebGL Stuff</title>
-		<link rel="stylesheet" href="./src/index.css">
+    <base href=".">
+		<link rel="stylesheet" href="./index.css">
 
 		<!-- Fragment Shader -->
 		<script id="shader-fs" type="x-shader/x-fragment">
 			precision mediump float;
 			varying vec4 vColor;
 
-			void main()
-			{
+			void main() {
 				gl_FragColor = vColor;
 			}
 		</script>
@@ -25,15 +25,14 @@
 
 			varying vec4 vColor;
 
-			void main()
-			{
+			void main() {
 				gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 				vColor = color;
 			}
 		</script>
 	</head>
 	<body>
+    <script type="module" src="./index.js"></script>
 		<canvas id="screen"></canvas>
-		<script src="index_bundle.js"></script>
 	</body>
 </html>
